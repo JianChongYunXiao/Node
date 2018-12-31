@@ -1,0 +1,101 @@
+<!DOCTYPE html><html><head><title>12/18 Node2</title><meta charset='utf-8'><link href='https://cdn.maxiang.io/res-min/themes/marxico.css' rel='stylesheet'><style>
+.note-content  {font-family: 'Helvetica Neue', Arial, 'Hiragino Sans GB', STHeiti, 'Microsoft YaHei', 'WenQuanYi Micro Hei', SimSun, Song, sans-serif;}
+
+</style></head><body><div id='preview-contents' class='note-content'>
+                        
+                    
+
+
+
+<h1 id="1218-node2">12/18 Node2</h1>
+
+<p>trim():  首尾去空格 <br>
+window.location.href : 跳转页面的路径。</p>
+
+<p>node 运行的js文件，分为get和post请求两种。今天讲了两种的不同写法，详情见课件。</p>
+
+
+
+<h3 id="express">Express</h3>
+
+<blockquote>
+  <p>管理员窗口：（中操作） <br>
+  npm init  ：创建一个文件 package.json</p>
+</blockquote>
+
+<p>www.baidu.com:80 /    ==  http : // localhost : 80 /</p>
+
+<p>res.query  ： 直接把查询信息转成信息。 <br>
+res.json ：等于：res.write(JSON.stringify(obj) )    res.end( )</p>
+
+<p>app.get ( url, (req,res)=&gt;{ } ) <br>
+app.post ( url, (req,res)=&gt;{ } )</p>
+
+<p>// 静态文件： <br>
+app.use(express.static(‘www’)) <br>
+通过use给app注入一个，管理静态文件的新功能。</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">let</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>)  <span class="hljs-comment">// 引入 express</span>
+</div><div class="hljs-line">app.use(express.static(<span class="hljs-string">'www'</span>),(req,res,next)=&gt;{ <span class="hljs-comment">// static() 是什么方法？</span>
+</div><div class="hljs-line">    res.write(fs.readFileSync(<span class="hljs-string">'./www/404.html'</span>)); <span class="hljs-comment">// 读取这个路径上的这个文件，并把读取的内容 发送出去。</span>
+</div><div class="hljs-line">    res.end();  <span class="hljs-comment">// 发送结束</span>
+</div><div class="hljs-line">    next();     <span class="hljs-comment">// ?</span>
+</div><div class="hljs-line">});
+</div></code></pre>
+
+
+
+<h3 id="安装express-组件">安装express 组件</h3>
+
+<p>npm init 项目初始化（无脑回车即可） *name 属性名字不要取某些工具名字，</p>
+
+<p>产生一个 package.json 的文件。</p>
+
+<p>安装包： （后台管理输入）</p>
+
+<ul><li><p>npm install body-parser  cookie-parser  express  multer  –save   (此处这是一次性安装了 body-parser、multer、express、三个组件，会出现对应的三个文件)</p></li>
+</ul>
+
+<p>引包 ：</p>
+
+<ul><li><p>require(‘express’)   -&gt; 引入express。其他的一样引入。</p></li>
+</ul>
+
+<p>__dirname   当前文件目录</p>
+
+
+
+<pre class="prettyprint hljs-dark"><code class="language-javascript hljs"><div class="hljs-line"><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> app = express();
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> bodyParser = <span class="hljs-built_in">require</span>(<span class="hljs-string">'body-parser'</span>);
+</div><div class="hljs-line"><span class="hljs-keyword">const</span> multer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'muiter'</span>); <span class="hljs-comment">// 引入'multer' 获取中间件</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">app.use(express.static(<span class="hljs-string">'www'</span>)); 静态资源管理
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">app.post(<span class="hljs-string">'/file_upload'</span>, (req, res)=&gt;{
+</div><div class="hljs-line">    <span class="hljs-comment">// 写入的路径和名字</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">let</span> des_file = _dirname + <span class="hljs-string">"/uploads"</span> + req.files[<span class="hljs-number">0</span>].originalname;
+</div><div class="hljs-line">    <span class="hljs-keyword">try</span>{
+</div><div class="hljs-line">        <span class="hljs-keyword">let</span> data = fs.readFileSync(req.files[<span class="hljs-number">0</span>].path);
+</div><div class="hljs-line">        fs.writeFileSync(des_file, data);
+</div><div class="hljs-line">        res.json({<span class="hljs-attr">code</span>:<span class="hljs-number">0</span>, <span class="hljs-attr">msg</span>:<span class="hljs-string">'成功'</span>});
+</div><div class="hljs-line">    }<span class="hljs-keyword">catch</span>(error){
+</div><div class="hljs-line">        res.json({<span class="hljs-attr">code</span>:<span class="hljs-number">1</span>, <span class="hljs-attr">msg</span>:<span class="hljs-string">'失败'</span>});
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">});
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">app.listen(<span class="hljs-number">80</span>, ()=&gt;{
+</div><div class="hljs-line">    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'启动成功'</span>)；
+</div><div class="hljs-line">})
+</div></code></pre>
+
+<blockquote>
+  <p>~~  ：取整。</p>
+</blockquote>
+
+<p>express multer  -&gt; 中间件；</p>
+
+<p>–dirname：当前文件夹的目录</p></div></body></html>
